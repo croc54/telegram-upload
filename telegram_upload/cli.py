@@ -30,7 +30,7 @@ class IterableDialogList(_DialogList):
     many = False
 
     def __init__(self, values: Sequence[Tuple[_T, AnyFormattedText]]) -> None:
-        pass
+        super().__init__([("", "")])
 
     async def _init(self, values: Sequence[Tuple[_T, AnyFormattedText]]) -> None:
         started_values = await aislice(values, PAGE_SIZE)
