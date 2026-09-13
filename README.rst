@@ -49,6 +49,29 @@ This is the preferred method to install telegram-upload, as it will always insta
 🐍 **Python 3.7-3.11** are tested and supported. There are other installation ways available like `Docker <#-docker>`_.
 More info in the `📕 documentation <https://docs.nekmo.org/telegram-upload/installation.html>`_
 
+Modernization
+=============
+
+This fork includes a series of modernization patches aimed at improving compatibility with newer Python releases,
+particularly Python 3.12 and Python 3.14.
+
+The modernization work includes:
+
+* Removal of the deprecated ``distutils`` dependency.
+* Modernization of ``asyncio`` handling.
+* Modernization of file path handling using ``pathlib``.
+* Updates to ``prompt-toolkit`` integration.
+* Fixes for Windows-specific test and runtime issues.
+* Improved terminal upload progress display.
+* Optional in-chat Telegram upload progress reporting.
+* Improved Telegram client shutdown and cleanup.
+
+The modernized code has been tested on Windows and Android/Termux with Python 3.14, including successful real
+Telegram uploads.
+
+These changes are intended to improve compatibility with newer Python versions. The original project's
+Python-version declarations have not been changed to claim official support for Python 3.12 or 3.14.
+
 .. image:: https://raw.githubusercontent.com/Nekmo/telegram-upload/master/telegram-upload-demo.gif
   :target: https://asciinema.org/a/592098
   :width: 100%
