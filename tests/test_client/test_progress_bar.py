@@ -14,7 +14,14 @@ class TestGetProgressBar(unittest.TestCase):
         progress, bar = get_progress_bar(action, file, length)
         progress(current, None)
         progress(5, None)  # The bar should not go back
-        mock_click.progressbar.assert_called_once_with(label=f"{action} \"{file}\"", length=length)
+
+        mock_click.progressbar.assert_called_once_with(
+            length=length,
+            fill_char=mock_click.style.return_value,
+            empty_char=mock_click.style.return_value,
+        )
+        mock_click.style.assert_any_call("■", fg="green")
+        mock_click.style.assert_any_call("□", fg="white")
         self.assertEqual(0, mock_click.progressbar.return_value.pos)
         mock_click.progressbar.return_value.update.assert_called_once_with(current)
         self.assertEqual(mock_click.progressbar.return_value, bar)

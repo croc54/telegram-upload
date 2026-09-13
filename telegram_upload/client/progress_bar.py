@@ -1,16 +1,20 @@
-from ctypes import c_int64
-
 import click
 
 
 def get_progress_bar(action, file, length):
-    bar = click.progressbar(label='{} "{}"'.format(action, file), length=length)
-    last_current = c_int64(0)
+    print(f'{action} "{file}"')
+    bar = click.progressbar(
+        length=length,
+        fill_char=click.style('■', fg='green'),
+        empty_char=click.style('□', fg='white')
+    )
+    last_current = 0
 
     def progress(current, total):
-        if current < last_current.value:
+        nonlocal last_current
+        if current < last_current:
             return
         bar.pos = 0
         bar.update(current)
-        last_current.value = current
+        last_current = current
     return progress, bar
