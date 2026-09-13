@@ -3,7 +3,7 @@ import os
 import sys
 import unittest
 
-from unittest.mock import patch, mock_open, Mock, MagicMock, call
+from unittest.mock import AsyncMock, MagicMock, Mock, call, mock_open, patch
 
 from telethon import types
 from telethon.errors import FloodWaitError, RPCError
@@ -39,6 +39,18 @@ class TestTelegramUploadClient(IsolatedAsyncioTestCase):
         self.client = TelegramUploadClient(Mock(), Mock(), Mock())
         self.client.send_file = Mock()
         self.client.send_file.return_value.media.document.size = os.path.getsize(self.upload_file_path)
+        self.progress_reporter = MagicMock()
+        self.progress_reporter.start = AsyncMock()
+        self.progress_reporter.update = AsyncMock()
+        self.progress_reporter.finish = AsyncMock()
+        self.progress_reporter.fail = AsyncMock()
+
+        self.reporter_patcher = patch(
+            "telegram_upload.client.telegram_upload_client.TelegramProgressReporter",
+            return_value=self.progress_reporter,
+        )
+        self.mock_reporter_class = self.reporter_patcher.start()
+        self.addCleanup(self.reporter_patcher.stop)
 
     @patch("telegram_upload.client.telegram_upload_client.TelegramUploadClient.forward_messages")
     def test_forward_to(self, mock_forward_messages: MagicMock):
@@ -169,3 +181,23 @@ class TestTelegramUploadClient(IsolatedAsyncioTestCase):
                    side_effect=lambda obj, target: isinstance_result.get(target, isinstance(obj, target))), \
                 self.subTest("Test Document"):
             await self.client._send_media(entity, file, mock_progress)
+
+    def test_one_file_retry_reuses_progress_reporter(self):
+        entity = 'foo'
+        file = File(MagicMock(max_caption_length=200), self.upload_file_path)
+        message = MagicMock()
+
+        self.client._send_file_message = MagicMock(
+            side_effect=[RPCError(None, ""), message]
+        )
+
+        self.client.send_one_file(entity, file, False, None, 1)
+
+        self.mock_reporter_class.assert_called_once_with(
+            self.client,
+            entity,
+            file.file_name,
+            file.file_size,
+        )
+        self.progress_reporter.start.assert_awaited_once()
+        self.progress_reporter.finish.assert_awaited_once()

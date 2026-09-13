@@ -189,6 +189,7 @@ def upload(files, to, config, delete_on_success, print_file_id, force_file, forw
         client.send_files_as_album(to, files, delete_on_success, print_file_id, forward)
     else:
         client.send_files(to, files, delete_on_success, print_file_id, forward)
+    client.disconnect()
 
 
 @click.command()
