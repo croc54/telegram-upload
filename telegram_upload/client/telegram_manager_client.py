@@ -3,23 +3,19 @@ import json
 import os
 import re
 import sys
-from distutils.version import StrictVersion
 from typing import Union
 from urllib.parse import urlparse
 
 import click
+import telethon.sync
 from telethon.errors import ApiIdInvalidError
 from telethon.network import ConnectionTcpMTProxyRandomizedIntermediate
 from telethon.tl.types import DocumentAttributeFilename, User, InputPeerUser
-from telethon.version import __version__ as telethon_version
 
 from telegram_upload.client.telegram_download_client import TelegramDownloadClient
 from telegram_upload.client.telegram_upload_client import TelegramUploadClient
 from telegram_upload.config import SESSION_FILE
 from telegram_upload.exceptions import TelegramProxyError, InvalidApiFileError
-
-if StrictVersion(telethon_version) >= StrictVersion('1.0'):
-    import telethon.sync  # noqa
 
 
 if sys.version_info < (3, 8):
