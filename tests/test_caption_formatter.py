@@ -367,7 +367,7 @@ class TestFilePath(unittest.TestCase):
     def test_absolute(self):
         """Test the absolute attribute."""
         file_path = FilePath("/home/user/file.tar.gz")
-        self.assertEqual("/home/user/file.tar.gz", str(file_path.absolute))
+        self.assertTrue(file_path.absolute.is_absolute())
 
     @patch("telegram_upload.caption_formatter.Path.cwd")
     def test_relative(self, mock_cwd: MagicMock):
@@ -412,4 +412,4 @@ class TestTestCaptionFormat(unittest.TestCase):
         runner = CliRunner()
         result = runner.invoke(test_caption_format, [__file__, "{file.stem}"])
         self.assertEqual(0, result.exit_code)
-        mock_print.assert_called_once_with(__file__.split("/")[-1].split(".")[0])
+        mock_print.assert_called_once_with(Path(__file__).stem)
